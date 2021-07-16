@@ -46,15 +46,43 @@ Source : <https://docs.microsoft.com/en-us/azure/architecture/reference-architec
 
 ### Environment setup
 
-First, we need to create our development and production environments.
+For this project, we need different Azure resources :
 
-#### ***Development environment (Local or on Compute instance in Azure Machine Learning in the development resource group)***
+- an Azure Blob Storage
+- a Key Vault
+- an Application Insights
+- a Container Registry
+- an Azure Machine Learning workspace
+
+#### ***Infrastructure as code (ARM templates)***
+
+To create all the resources, we will use the Azure Resource Manager templates (ARM templates) to have an infrastructure as code. [Here](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/overview) is the overview of what is ARM templates.
+
+This allows us to control our Azure resources more formally between developers and data scientists.
+
+We will create the templates under the [environment_setup](/environment_setup) folder. You can find more info in the documentation on the file to understand which resources are set up and why.
+
+We will have :
+
+- a [cloud_environment.bicep](/environment_setup/arm-templates/cloud_environment.bicep) file on which we will generate the json file needed by the Azure Resource Manager to create the resources.
+It will be deployed like this in the Azure DevOps Pipeline :
+
+    - bicep build filename.bicep command to generate the json)
+    - az deployment group create -f ./filename.json -g your-resource-group
+
+- a [iac-create-environment-pipeline-arm.yml](/environment_setup/iac-create-environment-pipeline-arm.yml) file that is an Azure pipeline (in Azure DevOps), to help automate the process of deploying resources each time there is a change on the templates pushed to the repository (CI/CD principle).
+
+We then need to choose our development platform.
+
+#### ***Development platform (Local or on Compute instance in Azure Machine Learning in the development resource group)***
 
 We need to set up a development environment that allows us to share and reproduce experiments.
 
 A good practice is to run your experiments using Jupyter notebooks, but what can we create to allow Data Scientists to share their experiments and reproduce experiments done by other Data Scientists ?
 
 First, we can share our code using git (allows versioning and centralized code for the whole project) and Azure Machine Learning studio to have shared files and experiments.
+
+We have 2 choices :
 
 **Web interface** :
 
@@ -73,6 +101,8 @@ This Compute instance is linked to your workspace :
     8. your datastores.
     9. push to the Git repo with the terminal of your compute instance.
 
+You can learn more on how to run Jupyter notebooks [here](https://docs.microsoft.com/fr-fr/azure/machine-learning/how-to-run-jupyter-notebooks).
+
 **Visual studio code** :
 
 Or you can use visual studio code if you like to have a version of the code on your laptop and tune your development IDE.
@@ -86,9 +116,15 @@ Installation for VS code:
 
 You now have the same functionalities than on the web interface in your Visual Studio code environment.
 
+If you want the full setup tutorial, check [here](https://docs.microsoft.com/fr-fr/azure/machine-learning/how-to-setup-vs-code).
+
 #### ***Production environment***
 
-### Best practices for development
+TO DO
+
+### Best practices to integrate MLOps in ML lifecycle in Azure
+
+Here is the best practices we chose to follow (:warning: I'm not saying you cannot have best practices of MLOps in your project if you don't use this principles, for example you can find a lot of this concepts using Kubeflow on an Azure Kubernetes Cluster, but this configuration needs to maintain an AKS cluster and then was not chosen for my project, so it is out of the scope of this repository, check Google Cloud MLOps course on Coursera if you want to know more).
 
 1. Experimenting
     Versioning (Git)
