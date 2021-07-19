@@ -3,6 +3,6 @@
         "value": "mlopspocneosoft"
     },
     "amlWorkspaceName": {
-        "value": "mlops-AML-WS"
+        "value": "mlops-train-AML-WS"
     }
 }
