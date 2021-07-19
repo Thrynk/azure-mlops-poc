@@ -7,6 +7,7 @@
 This repository is intended to reproduce the [MLOps Python repository](https://github.com/microsoft/MLOpsPython/) of Azure.
 
 I wanted to reproduce step by step, the project to understand better the different tools to use, and the overall concept of integrating MLOps in a Machine Learning Project in Microsoft Azure.
+And also to add some custom tools, that I think are useful for MLOps.
 
 ### A few words on MLOps Python project
 
@@ -24,23 +25,23 @@ I will allow myself to add some modifications on the architecture but they will 
 
 This architecture consists of the following components:
 
-> Azure Pipelines. This build and test system is based on Azure DevOps and used for the build and release pipelines. Azure Pipelines breaks these pipelines into logical steps called tasks. For example, the Azure CLI task makes it easier to work with Azure resources.
+> **Azure Pipelines**. This build and test system is based on Azure DevOps and used for the build and release pipelines. Azure Pipelines breaks these pipelines into logical steps called tasks. For example, the Azure CLI task makes it easier to work with Azure resources.
 >
-> Azure Machine Learning is a cloud service for training, scoring, deploying, and managing machine learning models at scale. This architecture uses the Azure Machine Learning Python SDK to create a workspace, compute resources, the machine learning pipeline, and the scoring image. An Azure Machine Learning workspace provides the space in which to experiment, train, and deploy machine learning models.
+> **Azure Machine Learning** is a cloud service for training, scoring, deploying, and managing machine learning models at scale. This architecture uses the Azure Machine Learning Python SDK to create a workspace, compute resources, the machine learning pipeline, and the scoring image. An Azure Machine Learning workspace provides the space in which to experiment, train, and deploy machine learning models.
 >
-> Azure Machine Learning Compute is a cluster of virtual machines on-demand with automatic scaling and GPU and CPU node options. The training job is executed on this cluster.
+> **Azure Machine Learning Compute** is a cluster of virtual machines on-demand with automatic scaling and GPU and CPU node options. The training job is executed on this cluster.
 >
-> Azure Machine Learning pipelines provide reusable machine learning workflows that can be reused across scenarios. Training, model evaluation, model registration, and image creation occur in distinct steps within these pipelines for this use case. The pipeline is published or updated at the end of the build phase and gets triggered on new data arrival.
+> **Azure Machine Learning pipelines** provide reusable machine learning workflows that can be reused across scenarios. Training, model evaluation, model registration, and image creation occur in distinct steps within these pipelines for this use case. The pipeline is published or updated at the end of the build phase and gets triggered on new data arrival.
 >
-> Azure Blob Storage. Blob containers are used to store the logs from the scoring service. In this case, both the input data and the model prediction are collected. After some transformation, these logs can be used for model retraining.
+> **Azure Blob Storage**. Blob containers are used to store the logs from the scoring service. In this case, both the input data and the model prediction are collected. After some transformation, these logs can be used for model retraining.
 >
-> Azure Container Registry. The scoring Python script is packaged as a Docker image and versioned in the registry.
+> **Azure Container Registry**. The scoring Python script is packaged as a Docker image and versioned in the registry.
 >
-> Azure Container Instances. As part of the release pipeline, the QA and staging environment is mimicked by deploying the scoring webservice image to Container Instances, which provides an easy, serverless way to run a container.
+> **Azure Container Instances**. As part of the release pipeline, the QA and staging environment is mimicked by deploying the scoring webservice image to Container Instances, which provides an easy, serverless way to run a container.
 >
-> Azure Kubernetes Service. Once the scoring webservice image is thoroughly tested in the QA environment, it is deployed to the production environment on a managed Kubernetes cluster.
+> **Azure Kubernetes Service**. Once the scoring webservice image is thoroughly tested in the QA environment, it is deployed to the production environment on a managed Kubernetes cluster.
 >
-> Azure Application Insights. This monitoring service is used to detect performance anomalies.
+> **Azure Application Insights**. This monitoring service is used to detect performance anomalies.
 
 Source : <https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/ai/mlops-python>
 
@@ -124,7 +125,7 @@ TO DO
 
 ### Best practices to integrate MLOps in ML lifecycle in Azure
 
-Here is the best practices we chose to follow (:warning: I'm not saying you cannot have best practices of MLOps in your project if you don't use this principles, for example you can find a lot of this concepts using Kubeflow on an Azure Kubernetes Cluster, but this configuration needs to maintain an AKS cluster and then was not chosen for my project, so it is out of the scope of this repository, check Google Cloud MLOps course on Coursera if you want to know more).
+Here are the best practices we chose to follow (:warning: I'm not saying you cannot have the best practices of MLOps in your project if you don't use this principles, for example you can reproduce a lot of this concepts using Kubeflow on an Azure Kubernetes Cluster, but this configuration needs to maintain an AKS cluster and then was not chosen for my project, so it is out of the scope of this repository, check Google Cloud MLOps course on Coursera if you want to know more).
 
 1. Experimenting
     Versioning (Git)
