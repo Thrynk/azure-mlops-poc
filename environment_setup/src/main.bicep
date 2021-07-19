@@ -19,12 +19,6 @@ param storageAccountName string = '${baseName}amlsa'
 param keyVaultName string = '${baseName}-AML-KV'
 param appInsightsName string = '${baseName}-AML-AI'
 param containerRegistryName string = '${baseName}amlcr'
-@allowed([
-  'basic'
-  'enterprise'
-])
-@description('Specifies the sku, also referred as \'edition\' of the Azure Machine Learning workspace.')
-param sku string = 'basic'
 
 var storageAccountType = 'Standard_LRS'
 var tenantId = subscription().tenantId
@@ -99,10 +93,6 @@ resource amlWorkspace 'Microsoft.MachineLearningServices/workspaces@2018-11-19' 
   ]
   identity: {
     type: 'SystemAssigned'
-  }
-  sku: {
-    tier: sku
-    name: sku
   }
   properties: {
     friendlyName: amlWorkspaceName
