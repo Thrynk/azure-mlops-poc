@@ -1,0 +1,39 @@
+# CI/PR Pipeline that deploys an ARM template to create or update the resources needed by the other pipelines.
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - environment_setup/src/*
+
+pr:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - environment_setup/src/*
+
+pool:
+  vmImage: "ubuntu-latest"
+
+# It contains the same variables than the parameters.json file that you would provide with the CLI.
+variables:
+  - group: mlops-neosoft-vg
+  - name: WORKSPACE_SKU
+    value: basic
+
+steps:
+  # task : https://docs.microsoft.com/fr-fr/azure/devops/pipelines/tasks/deploy/azure-resource-group-deployment?view=azure-devops
+  - task: AzureResourceGroupDeployment@2
+    inputs:
+      azureSubscription: "$(AZURE_RM_SVC_CONNECTION)"
+      action: "Create Or Update Resource Group"
+      resourceGroupName: "$(RESOURCE_GROUP)"
+      location: "$(LOCATION)"
+      templateLocation: "Linked Artifact"
+      csmFile: "$(Build.SourcesDirectory)/environment_setup/src/main.bicep"
+      overrideParameters: "-baseName $(BASE_NAME) -location $(LOCATION) -amlWorkspaceName $(WORKSPACE_NAME) -sku $(WORKSPACE_SKU)"
+      deploymentMode: "Incremental"
+    displayName: "Deploy ML and MLOps resources to Azure"
