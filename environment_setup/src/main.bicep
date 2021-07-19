@@ -1,5 +1,5 @@
 @minLength(3)
-@maxLength(10)
+@maxLength(20)
 @description('The base name to use as prefix to create all the resources.')
 param baseName string
 @allowed([
@@ -87,6 +87,7 @@ resource acr 'Microsoft.ContainerRegistry/registries@2017-10-01' = {
   }
 }
 
+// The Azure Machine Learning Workspace needs a storage account, a key vault, an app insight and a container registry.
 resource amlWorkspace 'Microsoft.MachineLearningServices/workspaces@2018-11-19' = {
   name: amlWorkspaceName
   location: location

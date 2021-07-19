@@ -65,13 +65,20 @@ We will create the templates under the [environment_setup](/environment_setup) f
 
 We will have :
 
-- a [cloud_environment.bicep](/environment_setup/arm-templates/cloud_environment.bicep) file on which we will generate the json file needed by the Azure Resource Manager to create the resources.
+- a [main.bicep](/environment_setup/src/main.bicep) file on which will create the resources with the Azure Resource Manager. Azure Resource Manager now handles bicep compilation for you.
 It will be deployed like this in the Azure DevOps Pipeline :
 
-    - bicep build filename.bicep command to generate the json)
-    - az deployment group create -f ./filename.json -g your-resource-group
+```bash
+az deployment group create --template-file ./environment_setup/src/main.bicep -g mlops-AML-RG --parameters ./environment_setup/src/parameters.json
+```
 
-- a [iac-create-environment-pipeline-arm.yml](/environment_setup/iac-create-environment-pipeline-arm.yml) file that is an Azure pipeline (in Azure DevOps), to help automate the process of deploying resources each time there is a change on the templates pushed to the repository (CI/CD principle).
+You can check the impact of the deployment with :
+
+```bash
+az deployment group what-if --template-file ./environment_setup/src/main.bicep -g mlops-train-AML-RG --parameters ./environment_setup/src/parameters.json
+```
+
+- a [iac-create-environment-pipeline-arm.yml](/environment_setup/pipelines/iac-create-environment-pipeline-arm.yml) file that is an Azure pipeline (in Azure DevOps), to help automate the process of deploying resources each time there is a change on the templates pushed to the repository (CI/CD principle).
 
 We then need to choose our development platform.
 
