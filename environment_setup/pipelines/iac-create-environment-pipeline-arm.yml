@@ -23,17 +23,16 @@ variables:
   - group: mlops-neosoft-vg
   - name: WORKSPACE_SKU
     value: basic
+  - templateFile: './environment_setup/src/main.bicep'
 
 steps:
   # task : https://docs.microsoft.com/fr-fr/azure/devops/pipelines/tasks/deploy/azure-resource-group-deployment?view=azure-devops
-  - task: AzureResourceGroupDeployment@2
+  - task: AzureCLI@2
     inputs:
       azureSubscription: "$(AZURE_RM_SVC_CONNECTION)"
-      action: "Create Or Update Resource Group"
-      resourceGroupName: "$(RESOURCE_GROUP)"
-      location: "$(LOCATION)"
-      templateLocation: "Linked Artifact"
-      csmFile: "$(Build.SourcesDirectory)/environment_setup/src/main.bicep"
-      overrideParameters: "-baseName $(BASE_NAME) -location $(LOCATION) -amlWorkspaceName $(WORKSPACE_NAME) -sku $(WORKSPACE_SKU)"
-      deploymentMode: "Incremental"
-    displayName: "Deploy ML and MLOps resources to Azure"
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        az --version
+        az group create --name $(RESOURCE_GROUP) --location $(LOCATION)
+        az deployment group create --resource-group $(RESOURCE_GROUP) --template-file $(templateFile) --parameters baseName=$(BASE_NAME) location=$(LOCATION) amlWorkspaceName=$(WORKSPACE_NAME) sku=$(WORKSPACE_SKU)
