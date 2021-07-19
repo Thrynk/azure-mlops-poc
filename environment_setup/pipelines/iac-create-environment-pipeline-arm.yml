@@ -23,7 +23,8 @@ variables:
   - group: mlops-neosoft-vg
   - name: WORKSPACE_SKU
     value: basic
-  - templateFile: './environment_setup/src/main.bicep'
+  - name: templateFile
+    value: './environment_setup/src/main.bicep'
 
 steps:
   # task : https://docs.microsoft.com/fr-fr/azure/devops/pipelines/tasks/deploy/azure-resource-group-deployment?view=azure-devops
