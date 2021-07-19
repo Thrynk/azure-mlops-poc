@@ -5,7 +5,7 @@ trigger:
       - main
   paths:
     include:
-      - environment_setup/src/*
+      - environment_setup/*
 
 pr:
   branches:
@@ -13,7 +13,7 @@ pr:
       - main
   paths:
     include:
-      - environment_setup/src/*
+      - environment_setup/*
 
 pool:
   vmImage: "ubuntu-latest"
@@ -21,8 +21,6 @@ pool:
 # It contains the same variables than the parameters.json file that you would provide with the CLI.
 variables:
   - group: mlops-neosoft-vg
-  - name: WORKSPACE_SKU
-    value: basic
   - name: templateFile
     value: './environment_setup/src/main.bicep'
 
@@ -36,4 +34,4 @@ steps:
       inlineScript: |
         az --version
         az group create --name $(RESOURCE_GROUP) --location $(LOCATION)
-        az deployment group create --resource-group $(RESOURCE_GROUP) --template-file $(templateFile) --parameters baseName=$(BASE_NAME) location=$(LOCATION) amlWorkspaceName=$(WORKSPACE_NAME) sku=$(WORKSPACE_SKU)
+        az deployment group create --resource-group $(RESOURCE_GROUP) --template-file $(templateFile) --parameters baseName=$(BASE_NAME) location=$(LOCATION) amlWorkspaceName=$(WORKSPACE_NAME)
