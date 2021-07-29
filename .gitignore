@@ -1,5 +1,10 @@
 .vscode/
 
+.azureml
 .ipynb_aml_checkpoints/ 
 *.amltmp 
 *.amltemp
+
+__pycache__/
+
+.env
