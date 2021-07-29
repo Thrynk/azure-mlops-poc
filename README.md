@@ -134,15 +134,71 @@ TO DO
 
 Here are the best practices we chose to follow (:warning: I'm not saying you cannot have the best practices of MLOps in your project if you don't use this principles, for example you can reproduce a lot of this concepts using Kubeflow on an Azure Kubernetes Cluster, but this configuration needs to maintain an AKS cluster and then was not chosen for my project, so it is out of the scope of this repository, check Google Cloud MLOps course on Coursera if you want to know more).
 
-1. Experimenting
-    Versioning (Git)
-    Sharing in Workspace
-    Using versioned datasets
-    Tracking experiments using MLFlow
-        tracking parameters
-        tracking models
-        tracking results
-    Documenting your experiments
-    Environments
-2. Go to a 1st version of production-ready code
-3. Write pipelines
+#### **Experimenting**
+
+##### **Tracking experiments using MLFlow**
+
+We are going to use MLflow to track our different experiments. As Data Scientists, we experiment in Notebooks. The idea here is to provide a reproductible experiment with the different parameters, models, results and notebook versions.
+First, create a Notebook corresponding to your experiment in the [experimentation](/experimentation) folder.
+
+In a traditional way, the notebook would look like [this](/experimentation/Diabetes%20Ridge%20Regression%20Training.ipynb). (If you want to execute this notebook, you need to be familiar with the [Experimenting : environments](#environments) part to setup the needed environment for the project).
+
+When using MLflow, you need to have a notebook that is like [this](/experimentation/Diabetes%20Ridge%20Regression%20Training%20MLflow.ipynb) to track your experiment so that it can appear in Azure.
+
+- tracking parameters :
+
+  - It is important to track your parameters when experimenting to allow future data scientists to know which parameters have been tried in the past.
+- tracking models :
+
+  - Versioning your models is important to compare them and keep track of which model is better.
+- tracking results (metrics) :
+
+  - tracking your metrics allows to know how your model performed in the run and eventually if it is better than another one according to these particular metrics.
+
+##### **Versioning (Git)**
+
+Versioning the code is very important because it allows Data Scientists to know who did what so they can reach out the person if they have a question.
+
+It also allows to track different versions of the code, to share and rollback to a previous version.
+
+Commits represent an history of the project. So just reading all commits, you should be able to understand the history of the project.
+
+You can learn more on  [Git](https://git-scm.com/about) to understand better all the features.
+
+But our main interest here in MLOps, is to track code version and who did what.
+
+This tool is very helpful to implement pipelines with Azure DevOps.
+
+##### **Sharing in Workspace**
+
+You can eventually share your work in the shared workspace of Azure Machine Learning, so that you can access quickly your notebooks in the Web UI of Azure Machine Learning Workspace.
+
+But this is not replacing Git (which is our priority) because it doesn't allow version control.
+
+##### **Using versioned datasets**
+
+You should create Datasets using your datastore storage (workspaceblobstorage is the default datastore of your workspace).
+If you take the example of a csv file you want to upload and create a dataset on. The file will be uploaded to your datastore (workspaceblobstorage).
+
+You can manage different versions of your datasets and also see which models were trained on this particular dataset.
+
+Then, you can consume your dataset in your code.
+
+##### **Documenting your experiments**
+
+It is important to document your experiments and answer :
+
+- What experiment are you trying to do ?
+- Why are you doing this experiment ?
+
+You can answer those 2 questions each time you write a complex peace of code.
+
+##### **Environments**
+
+[Azure Machine Learning Environments](https://docs.microsoft.com/en-us/azure/machine-learning/concept-environments) are important for reproductability of your experiments and also to productionalize your models.
+
+You need these environments to submit a run to Azure Machine Learning Compute instances.
+
+#### **Go to a 1st version of production-ready code**
+
+#### **Write pipelines**
