@@ -8,3 +8,4 @@
 __pycache__/
 
 .env
+environment_setup/aml_workspace/config.json
