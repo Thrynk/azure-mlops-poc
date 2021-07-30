@@ -199,6 +199,40 @@ You can answer those 2 questions each time you write a complex peace of code.
 
 You need these environments to submit a run to Azure Machine Learning Compute instances.
 
+How to setup a local environment to run your experiments :
+
+```bash
+conda env create -f diabetes_regression/conda_dependencies.yml
+```
+
+To run this environment in Azure ML, this yaml file need to be in the source directory you will provide (here [diabetes_regression](/diabetes_regression) folder). 
+
+The source directory is a needed argument for a [PythonScriptStep](https://docs.microsoft.com/fr-fr/python/api/azureml-pipeline-steps/azureml.pipeline.steps.python_script_step.pythonscriptstep?view=azure-ml-py) in a pipeline).
+
+We will see what is a PythonScriptStep when creating pipelines.
+
 #### **Go to a 1st version of production-ready code**
+
+Then when you are satisfied with your experiment results, you might want to go to production with your model. For that you need to automate training and deployment of your model. When you push on the main branch or a release branch, you want your model to be trained, all artifacts to be saved in your workspace, all results to be tracked and your model to be evaluated against current production model.
+
+To do that, you need to create a more production ready-code of your experiment, that would allow you with just a few scripts and command line to train, evaluate and deploy your model.
+
+This work is in the [diabetes_regression](/diabetes_regression) folder.
+
+The idea is to create functions for each step of your workflow : training, evaluating your model, register your model and score an incoming example.
+
+What we need to do is refactor our code [here](/experimentation/Diabetes%20Ridge%20Regression%20Training%20MLflow.ipynb) into functions :
+
+1. Create a function called split_data to split dataframe into training and test.
+
+2. Create a function called train_model which takes data and args (parameters for model), and returns a trained model.
+
+3. Create a function called get_model_metrics with parameters : reg_model and data taht evaluates the model on test data and return a dict of metrics. (that can be logged with MLFlow or with log function of Run object from azureml.core).
+
+You can find this script [here](/diabetes_regression/training/train.py).
+
+Then we need a script that uses these functions and run them in our workspace and on wanted dataset version. This script will also be used as a step in our future pipeline for training the model. We also need to log the parameters and metrics to the AML Workspace.
+
+This script is [here](/diabetes_regression/training/train_aml.py).
 
 #### **Write pipelines**

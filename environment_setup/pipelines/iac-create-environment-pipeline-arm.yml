@@ -5,7 +5,8 @@ trigger:
       - main
   paths:
     include:
-      - environment_setup/*
+      - environment_setup/pipelines/*
+      - environment_setup/src/*
 
 pr:
   branches:
@@ -13,7 +14,8 @@ pr:
       - main
   paths:
     include:
-      - environment_setup/*
+      - environment_setup/pipelines/*
+      - environment_setup/src/*
 
 pool:
   vmImage: "ubuntu-latest"
