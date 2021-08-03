@@ -1,0 +1,23 @@
+# Continuous Integration (CI) pipeline that orchestrates the training, evaluation, and registration of the diabetes_regression model.
+
+resources:
+  containers:
+  - container: mlops
+    image: mcr.microsoft.com/mlops/python:latest
+
+pr: none
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - diabetes_regression/
+    - ml_service/pipelines/diabetes_regression_build_train_pipeline.py
+
+variables:
+- template: diabetes_regression-variables-template.yml
+- group: devopsforai-aml-vg
+
+pool:
+  vmImage: ubuntu-latest

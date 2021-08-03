@@ -235,6 +235,8 @@ You can find this script [here](/diabetes_regression/training/train.py).
 
 Then we want to create a pipeline that will be executed in our Azure Machine Learning Workspace.
 
+##### **Train model step**
+
 First, we need to create the training step (named "Train model") that will train our model and register test metrics to our Workspace.
 This step will then be used as a step for the whole training pipeline that will be run in our Workspace.
 
@@ -244,11 +246,15 @@ To write this script, we have to keep in mind that we want to execute the traini
 
 We want to create this step as a reusable component where we can choose the dataset version, parameters and model name, that we want to use for training. We also want to save the model to the output of this step, so it can be reused by other steps.
 
+##### **Evaluation step**
+
 Next, we want to have an evaluation step that compares new trained model with the model in production.
 
 For this step, we want to be able to choose the run to use (the one that trained the new model), the model name that is in production and if we allow this step to cancel the run if the newly trained model is not better than the previous one.
 
 This script is [here](/diabetes_regression/evaluate/evaluate_model.py).
+
+##### **Register model step**
 
 Then, we want to register the model if the run was not cancelled or if the new model is better than the previous one in production.
 
@@ -256,5 +262,61 @@ For this script, we will use the Model API from azureml.core.model to register t
 
 This script is [here](/diabetes_regression/register/register_model.py).
 
+##### **Build and publish Azure ML Pipeline to Workspace**
+
 Now we have all our steps for our pipeline, we can create our script that will build the pipeline in the AML Workspace.
 This script is [here](/ml_service/pipelines/diabetes_regression_build_train_pipeline.py)
+
+#### **CI/CD for Machine Learning**
+
+##### **Continous Integration for our ML pipeline**
+
+We want our pipeline to be deployed each time we push (ro maybe pr) to specific branches.
+We will use Azure DevOps to create Azure Pipelines (different from Azure Machine Learning pipelines).
+
+To create a pipeline, we use the yaml format. Learn more on [Azure Pipelines](https://docs.microsoft.com/fr-fr/azure/devops/pipelines/?view=azure-devops).
+
+**Choose trigger and set up environment and variables** :
+
+First, we choose when we want the Azure Pipeline to be triggered :
+
+- When there is a push on main branch affecting either the [diabetes_regression](/diabetes_regression) folder or the [diabetes_regression_build_train_pipeline.py](/ml_service/pipelines/diabetes_regression_build_train_pipeline.py) file.
+
+When we modify the way the Azure Machine Learning Pipeline is built or the steps of the pipeline are modified.
+
+Then, we specify resources, pool and variables that our Azure Pipeline will use (variables will populate the environment variables that are used in our code).
+
+**Stage 1 - Model CI** :
+
+- **Job 1** :
+
+  - **Step 1 - Code quality** :
+
+    In our CI pipeline, we want to check our code quality, to avoid running code that has not been check by a linter and that didn't pass our unit tests.
+
+    We setup different steps :
+
+    - Run lint tests with flake8
+    - Run unit tests with pytest
+    - Publish test results
+    - Publish coverage report
+
+  - **Step 2 - Building and publishing Azure Machine Learning Pipeline** :
+
+    Here, we execute our [diabetes_regression_build_train_pipeline.py](/ml_service.pipelines.diabetes_regression_build_train_pipeline.py) script to create and publish our Azure Machine Learning Pipeline.
+
+**Stage 2 - Trigger AML Pipeline** :
+
+- **Job 1 - Get Pipeline ID** :
+  - **Step 1 - Get Pipeline ID** :
+
+    Exexute [run_train_pipeline.py] script with --skip_train_execution parameter to skip execution and only get pipeline ID.
+
+- **Job 2 - Trigger ML training pipeline** :
+  - **Step 1 - Invoke ML Pipeline** :
+
+    Run ML Pipeline.
+
+- **Job 3 - Publish artifact if new model was registered** :
+  - **Step 1 - Install AzureML CLI** :
+  - **Step 2 - Determine if evaluation succeeded and new model is registered (CLI)**:
