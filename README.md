@@ -205,7 +205,7 @@ How to setup a local environment to run your experiments :
 conda env create -f diabetes_regression/conda_dependencies.yml
 ```
 
-To run this environment in Azure ML, this yaml file need to be in the source directory you will provide (here [diabetes_regression](/diabetes_regression) folder). 
+To run this environment in Azure ML, this yaml file need to be in the source directory you will provide (here [diabetes_regression](/diabetes_regression) folder).
 
 The source directory is a needed argument for a [PythonScriptStep](https://docs.microsoft.com/fr-fr/python/api/azureml-pipeline-steps/azureml.pipeline.steps.python_script_step.pythonscriptstep?view=azure-ml-py) in a pipeline).
 
@@ -227,12 +227,34 @@ What we need to do is refactor our code [here](/experimentation/Diabetes%20Ridge
 
 2. Create a function called train_model which takes data and args (parameters for model), and returns a trained model.
 
-3. Create a function called get_model_metrics with parameters : reg_model and data taht evaluates the model on test data and return a dict of metrics. (that can be logged with MLFlow or with log function of Run object from azureml.core).
+3. Create a function called get_model_metrics with parameters : reg_model and data taht evaluates the model on test data and return a dict of metrics. (that can be logged with MLFlow or with log function of Run object from azureml.core.run).
 
 You can find this script [here](/diabetes_regression/training/train.py).
 
-Then we need a script that uses these functions and run them in our workspace and on wanted dataset version. This script will also be used as a step in our future pipeline for training the model. We also need to log the parameters and metrics to the AML Workspace.
+#### **Write Azure ML pipelines**
+
+Then we want to create a pipeline that will be executed in our Azure Machine Learning Workspace.
+
+First, we need to create the training step (named "Train model") that will train our model and register test metrics to our Workspace.
+This step will then be used as a step for the whole training pipeline that will be run in our Workspace.
 
 This script is [here](/diabetes_regression/training/train_aml.py).
 
-#### **Write pipelines**
+To write this script, we have to keep in mind that we want to execute the training with the function coming from the [train.py](/diabetes_regression/training/train.py) script, and we also want to log parameters, dataset version and metrics to the experiment run.
+
+We want to create this step as a reusable component where we can choose the dataset version, parameters and model name, that we want to use for training. We also want to save the model to the output of this step, so it can be reused by other steps.
+
+Next, we want to have an evaluation step that compares new trained model with the model in production.
+
+For this step, we want to be able to choose the run to use (the one that trained the new model), the model name that is in production and if we allow this step to cancel the run if the newly trained model is not better than the previous one.
+
+This script is [here](/diabetes_regression/evaluate/evaluate_model.py).
+
+Then, we want to register the model if the run was not cancelled or if the new model is better than the previous one in production.
+
+For this script, we will use the Model API from azureml.core.model to register the model to the Azure Machine Learning Workspace. We need the run ID to tag it to the registered model, the model name to load the model and check if it exists and the pipeline data in input to get the model that has been trained by Train Model step.
+
+This script is [here](/diabetes_regression/register/register_model.py).
+
+Now we have all our steps for our pipeline, we can create our script that will build the pipeline in the AML Workspace.
+This script is [here](/ml_service/pipelines/diabetes_regression_build_train_pipeline.py)
