@@ -227,7 +227,7 @@ What we need to do is refactor our code [here](/experimentation/Diabetes%20Ridge
 
 2. Create a function called train_model which takes data and args (parameters for model), and returns a trained model.
 
-3. Create a function called get_model_metrics with parameters : reg_model and data taht evaluates the model on test data and return a dict of metrics. (that can be logged with MLFlow or with log function of Run object from azureml.core.run).
+3. Create a function called get_model_metrics with parameters : reg_model and data that evaluates the model on test data and return a dict of metrics. (that can be logged with MLFlow or with log function of Run object from azureml.core.run).
 
 You can find this script [here](/diabetes_regression/training/train.py).
 
@@ -310,7 +310,7 @@ Then, we specify resources, pool and variables that our Azure Pipeline will use 
 - **Job 1 - Get Pipeline ID** :
   - **Step 1 - Get Pipeline ID** :
 
-    Exexute [run_train_pipeline.py] script with --skip_train_execution parameter to skip execution and only get pipeline ID.
+    Execute [run_train_pipeline.py] script with --skip_train_execution parameter to skip execution and only get pipeline ID.
 
 - **Job 2 - Trigger ML training pipeline** :
   - **Step 1 - Invoke ML Pipeline** :
@@ -319,4 +319,9 @@ Then, we specify resources, pool and variables that our Azure Pipeline will use 
 
 - **Job 3 - Publish artifact if new model was registered** :
   - **Step 1 - Install AzureML CLI** :
+
+    Add AzureML extension to Azure CLI to query model that has been registered to the Azure Machine Learning workspace.
+
   - **Step 2 - Determine if evaluation succeeded and new model is registered (CLI)**:
+
+    Query model that has been trained and publish the model as an artifact.
