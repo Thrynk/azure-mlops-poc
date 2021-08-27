@@ -217,7 +217,7 @@ Then when you are satisfied with your experiment results, you might want to go t
 
 To do that, you need to create a more production ready-code of your experiment, that would allow you with just a few scripts and command line to train, evaluate and deploy your model.
 
-This work is in the [diabetes_regression](/diabetes_regression) folder.
+This work is in the [diabetes_regression](/diabetes_regression/training) folder.
 
 The idea is to create functions for each step of your workflow : training, evaluating your model, register your model and score an incoming example.
 
